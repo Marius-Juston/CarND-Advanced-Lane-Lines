@@ -90,6 +90,36 @@ def undistort(image, params):
     return cv2.undistort(image, mtx, dist, None, mtx)
 
 
+def find_perspective_lines(image):
+    height, width = image.shape
+
+    ground_offset = 35
+    x_bottom_width = 835
+    x_top_width = 115
+    y_height = height * 5 / 8
+
+    vertices = np.array([[width // 2 - x_bottom_width // 2, height - ground_offset],
+                         [width // 2 - x_top_width // 2, y_height],
+                         [width // 2 + x_top_width // 2, y_height],
+                         [width // 2 + x_bottom_width // 2, height - ground_offset]], dtype=np.float32)
+
+    image = np.dstack((image, image, image))
+    output = cv2.polylines(convert_to_image(image), [vertices.astype(np.int32)], True, (0, 255, 255), 4)
+
+    dist = np.array([[width // 2 - x_bottom_width // 2, height],
+                     [width // 2 - x_bottom_width // 2, 0],
+                     [width // 2 + x_bottom_width // 2, 0],
+                     [width // 2 - x_bottom_width // 2, height]], dtype=np.float32)
+
+    M = cv2.getPerspectiveTransform(vertices, dist)
+    perspective = cv2.warpPerspective(convert_to_image(image), M, (width, height), flags=cv2.INTER_LINEAR)
+
+    cv2.imshow("C", output)
+    cv2.imshow("P", perspective)
+
+    return
+
+
 def image_pipeline(image, params):
     undistorted = undistort(image, params)
 
@@ -100,4 +130,9 @@ def image_pipeline(image, params):
     cv2.imshow('grads', convert_to_image(gradients))
     cv2.imshow('colors', convert_to_image(colors))
 
-    return np.logical_or(gradients, colors)
+    combined_threshold = np.logical_or(gradients, colors)
+
+    find_perspective_lines(combined_threshold)
+
+    output = combined_threshold
+    return output
