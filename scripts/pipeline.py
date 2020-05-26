@@ -237,6 +237,7 @@ def fit_polynomial(binary_warped):
     cv2.polylines(out_img, [left_points.astype(np.int)], False, (0, 255, 255))
     cv2.polylines(out_img, [right_points.astype(np.int)], False, (0, 255, 255))
 
+    return out_img, left_points, right_points
 
 
 def image_pipeline(image, params):
@@ -252,8 +253,7 @@ def image_pipeline(image, params):
     combined_threshold = np.logical_or(gradients, colors)
 
     perspective, M = find_perspective_lines(combined_threshold)
-
-    leftx, lefty, rightx, righty, out_img = find_lane_pixels(perspective)
+    out_img, left_points, right_points = fit_polynomial(perspective)
 
     cv2.imshow('Sliding Lanes', out_img)
 
