@@ -241,7 +241,7 @@ def fit_polynomial(binary_warped):
     return out_img, left_points, right_points
 
 
-def draw_lines(image, left_points, right_points, M_inv):
+def draw_lines(image, left_points, right_points, M_inv, alpha=.25):
     left_points = left_points.reshape((-1, 1, 2))
     right_points = right_points.reshape((-1, 1, 2))
 
@@ -249,6 +249,13 @@ def draw_lines(image, left_points, right_points, M_inv):
     right_points = cv2.perspectiveTransform(right_points, M_inv)
 
     image = np.copy(image)
+    overlay = np.copy(image)
+
+    cv2.fillPoly(overlay, [
+        np.array([left_points[0][0], left_points[-1][0], right_points[-1][0], right_points[0][0]], dtype=np.int)],
+                 (0, 255, 0))
+
+    cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
     cv2.polylines(image, [left_points.reshape((-1, 2)).astype(np.int)], False, (0, 255, 255), thickness=5)
     cv2.polylines(image, [right_points.reshape((-1, 2)).astype(np.int)], False, (0, 255, 255), thickness=5)
