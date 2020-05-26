@@ -93,8 +93,8 @@ def undistort(image, params):
 def image_pipeline(image, params):
     undistorted = undistort(image, params)
 
-    gradients = gradient_threshold(image, params)
-    colors = color_threshold(image, params)
+    gradients = gradient_threshold(undistorted, params)
+    colors = color_threshold(undistorted, params)
 
     cv2.imshow('undistorted', undistorted)
     cv2.imshow('grads', convert_to_image(gradients))
