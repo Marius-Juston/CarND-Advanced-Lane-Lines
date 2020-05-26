@@ -323,6 +323,8 @@ def image_pipeline(image, params):
     out_img, left_points, right_points, left_fit, right_fit = fit_polynomial(perspective)
 
     out = draw_lines(image, left_points, right_points, M_inv)
+    cv2.imshow('Reverse Transform', out)
+
     y_eval = np.max(left_points[:, 1])
     left_curvature = calculate_curvature(left_fit, y_eval, params)
     right_curvature = calculate_curvature(right_fit, y_eval, params)
@@ -333,6 +335,5 @@ def image_pipeline(image, params):
     out = print_offset(out, offset)
 
     cv2.imshow('Sliding Lanes', out_img)
-    cv2.imshow('Reverse Transform', out)
 
     return out
