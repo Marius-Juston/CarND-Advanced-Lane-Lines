@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from scripts.pipeline import image_pipeline, convert_to_image
+from scripts.pipeline import image_pipeline
 
 if __name__ == '__main__':
     params = {
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     out = image_pipeline(image, params)
 
-    cv2.imshow("Ouput", convert_to_image(out))
+    cv2.imshow("Ouput", out)
 
     cv2.waitKey()
     cv2.destroyAllWindows()
