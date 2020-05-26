@@ -113,12 +113,13 @@ def find_perspective_lines(image):
     output = cv2.polylines(output, [dist.astype(np.int32)], True, (255, 0, 255), 4)
 
     M = cv2.getPerspectiveTransform(vertices, dist)
+    M_inv = cv2.getPerspectiveTransform(dist, vertices)
     perspective = cv2.warpPerspective(convert_to_image(image), M, (width, height), flags=cv2.INTER_LINEAR)
 
     cv2.imshow("Outlines", output)
     cv2.imshow("Perspective", perspective)
 
-    return perspective, M
+    return perspective, M, M_inv
 
 
 def hist(img):
@@ -252,7 +253,7 @@ def image_pipeline(image, params):
 
     combined_threshold = np.logical_or(gradients, colors)
 
-    perspective, M = find_perspective_lines(combined_threshold)
+    perspective, M, M_inv = find_perspective_lines(combined_threshold)
     out_img, left_points, right_points = fit_polynomial(perspective)
 
     cv2.imshow('Sliding Lanes', out_img)
