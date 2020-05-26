@@ -121,6 +121,15 @@ def find_perspective_lines(image):
     return perspective
 
 
+def hist(img):
+    histogram = np.sum(img[img.shape[0] // 2:, :], axis=0)
+
+    return histogram
+
+
+import matplotlib.pyplot as plt
+
+
 def image_pipeline(image, params):
     undistorted = undistort(image, params)
 
@@ -133,7 +142,11 @@ def image_pipeline(image, params):
 
     combined_threshold = np.logical_or(gradients, colors)
 
-    find_perspective_lines(combined_threshold)
+    perspective = find_perspective_lines(combined_threshold)
+    histogram = hist(perspective)
+
+    plt.plot(histogram)
+    plt.show()
 
     output = combined_threshold
     return output
