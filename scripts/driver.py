@@ -20,7 +20,7 @@ if __name__ == '__main__':
         'hsl_min': (0, 98, 90),
         'hsl_max': (81, 255, 255),
         'image_calib_folder': '../camera_cal',
-        'chessboard_size': (9, 5),
+        'chessboard_size': (9, 6),
         'undistort': 'undistort.pickle'
     }
 
