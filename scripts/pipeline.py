@@ -263,6 +263,29 @@ def draw_lines(image, left_points, right_points, M_inv, alpha=.25):
     return image
 
 
+def calculate_curvature(fit, y, params):
+    mx, my = params['xm_per_pix'], params['ym_per_pix']
+    y = y * my
+
+    a_mul = mx / (my ** 2)
+    b_mul = mx / my
+
+    return (1 + (2 * fit[0] * a_mul * y + b_mul * fit[1]) ** 2) ** 1.5 / (np.abs(a_mul * 2 * fit[0]))
+
+
+def print_curvature(image, left_curvature, right_curvature):
+    text = f"Left Curve: {int(round(left_curvature, 0)):4d}m Right Curve: {int(round(right_curvature, 0)):4d}m"
+
+    out = np.copy(image)
+
+    size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+
+    cv2.putText(out,
+                text,
+                (10, 15 + size[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+
+    return out
+
 def image_pipeline(image, params):
     undistorted = undistort(image, params)
 
@@ -280,6 +303,11 @@ def image_pipeline(image, params):
     out_img, left_points, right_points, left_fit, right_fit = fit_polynomial(perspective)
 
     out = draw_lines(image, left_points, right_points, M_inv)
+    y_eval = np.max(left_points[:, 1])
+    left_curvature = calculate_curvature(left_fit, y_eval, params)
+    right_curvature = calculate_curvature(right_fit, y_eval, params)
+
+    out = print_curvature(out, left_curvature, right_curvature)
 
     cv2.imshow('Sliding Lanes', out_img)
     cv2.imshow('Reverse Transform', out)
