@@ -1,7 +1,20 @@
+import os
+
 import cv2
 import numpy as np
 
 from scripts.pipeline import image_pipeline
+
+
+def process_images(image_folder, output_folder):
+    for file in os.listdir(image_folder):
+        image = cv2.imread(f'{image_folder}/{file}')
+        out = image_pipeline(image, params)
+        cv2.imwrite(f'{output_folder}/{file}', out)
+        cv2.waitKey(500)
+
+    cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     params = {
@@ -26,11 +39,4 @@ if __name__ == '__main__':
         'ym_per_pix': 30 / 720
     }
 
-    image = cv2.imread('../test_images/test2.jpg')
-
-    out = image_pipeline(image, params)
-
-    cv2.imshow("Ouput", out)
-
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    process_images('../test_images', '../output_images')
