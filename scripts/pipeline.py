@@ -118,7 +118,7 @@ def find_perspective_lines(image):
     cv2.imshow("Outlines", output)
     cv2.imshow("Perspective", perspective)
 
-    return perspective
+    return perspective, M
 
 
 def hist(img):
@@ -142,8 +142,7 @@ def image_pipeline(image, params):
 
     combined_threshold = np.logical_or(gradients, colors)
 
-    perspective = find_perspective_lines(combined_threshold)
-    histogram = hist(perspective)
+    perspective, M = find_perspective_lines(combined_threshold)
 
     plt.plot(histogram)
     plt.show()
