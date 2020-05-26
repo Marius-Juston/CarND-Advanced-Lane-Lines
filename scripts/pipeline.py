@@ -238,7 +238,7 @@ def fit_polynomial(binary_warped):
     cv2.polylines(out_img, [left_points.astype(np.int)], False, (0, 255, 255))
     cv2.polylines(out_img, [right_points.astype(np.int)], False, (0, 255, 255))
 
-    return out_img, left_points, right_points
+    return out_img, left_points, right_points, left_fit, right_fit
 
 
 def draw_lines(image, left_points, right_points, M_inv, alpha=.25):
@@ -277,7 +277,7 @@ def image_pipeline(image, params):
     cv2.imshow("Combined", convert_to_image(combined_threshold))
 
     perspective, M, M_inv = find_perspective_lines(combined_threshold)
-    out_img, left_points, right_points = fit_polynomial(perspective)
+    out_img, left_points, right_points, left_fit, right_fit = fit_polynomial(perspective)
 
     out = draw_lines(image, left_points, right_points, M_inv)
 
