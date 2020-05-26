@@ -267,6 +267,7 @@ def image_pipeline(image, params):
     cv2.imshow('colors', convert_to_image(colors))
 
     combined_threshold = np.logical_or(gradients, colors)
+    cv2.imshow("Combined", convert_to_image(combined_threshold))
 
     perspective, M, M_inv = find_perspective_lines(combined_threshold)
     out_img, left_points, right_points = fit_polynomial(perspective)
@@ -276,5 +277,4 @@ def image_pipeline(image, params):
     cv2.imshow('Sliding Lanes', out_img)
     cv2.imshow('Reverse Transform', out)
 
-    output = combined_threshold
-    return output
+    return out
