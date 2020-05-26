@@ -241,6 +241,21 @@ def fit_polynomial(binary_warped):
     return out_img, left_points, right_points
 
 
+def draw_lines(image, left_points, right_points, M_inv):
+    left_points = left_points.reshape((-1, 1, 2))
+    right_points = right_points.reshape((-1, 1, 2))
+
+    left_points = cv2.perspectiveTransform(left_points, M_inv)
+    right_points = cv2.perspectiveTransform(right_points, M_inv)
+
+    image = np.copy(image)
+
+    cv2.polylines(image, [left_points.reshape((-1, 2)).astype(np.int)], False, (0, 255, 255), thickness=5)
+    cv2.polylines(image, [right_points.reshape((-1, 2)).astype(np.int)], False, (0, 255, 255), thickness=5)
+
+    return image
+
+
 def image_pipeline(image, params):
     undistorted = undistort(image, params)
 
@@ -256,7 +271,10 @@ def image_pipeline(image, params):
     perspective, M, M_inv = find_perspective_lines(combined_threshold)
     out_img, left_points, right_points = fit_polynomial(perspective)
 
+    out = draw_lines(image, left_points, right_points, M_inv)
+
     cv2.imshow('Sliding Lanes', out_img)
+    cv2.imshow('Reverse Transform', out)
 
     output = combined_threshold
     return output
