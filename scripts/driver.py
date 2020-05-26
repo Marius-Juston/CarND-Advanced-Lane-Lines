@@ -21,7 +21,9 @@ if __name__ == '__main__':
         'hsl_max': (81, 255, 255),
         'image_calib_folder': '../camera_cal',
         'chessboard_size': (9, 6),
-        'undistort': 'undistort.pickle'
+        'undistort': 'undistort.pickle',
+        'xm_per_pix': 3.7 / 700,
+        'ym_per_pix': 30 / 720
     }
 
     image = cv2.imread('../test_images/test2.jpg')
