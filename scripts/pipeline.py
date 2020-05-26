@@ -231,13 +231,12 @@ def fit_polynomial(binary_warped):
     out_img[righty, rightx] = [0, 0, 255]
 
     # Plots the left and right polynomials on the lane lines
-    plt.plot(left_fitx, ploty, color='yellow')
-    plt.plot(right_fitx, ploty, color='yellow')
+    right_points = np.vstack((right_fitx, ploty)).transpose()
+    left_points = np.vstack((left_fitx, ploty)).transpose()
 
-    return out_img
+    cv2.polylines(out_img, [left_points.astype(np.int)], False, (0, 255, 255))
+    cv2.polylines(out_img, [right_points.astype(np.int)], False, (0, 255, 255))
 
-
-import matplotlib.pyplot as plt
 
 
 def image_pipeline(image, params):
