@@ -286,6 +286,26 @@ def print_curvature(image, left_curvature, right_curvature):
 
     return out
 
+
+def print_offset(image, offset):
+    text = f"The car is {abs(offset):.3f}m to the {'right' if offset >= 0 else 'left'}"
+    size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+
+    out = np.copy(image)
+
+    cv2.putText(out,
+                text,
+                (10, 50 + size[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+
+    return out
+
+
+def get_offset(image, left_points, right_points, params):
+    offset = (left_points[0][0] + right_points[0][0]) / 2 - image.shape[1] / 2
+    offset = params['xm_per_pix'] * offset
+    return offset
+
+
 def image_pipeline(image, params):
     undistorted = undistort(image, params)
 
@@ -307,7 +327,10 @@ def image_pipeline(image, params):
     left_curvature = calculate_curvature(left_fit, y_eval, params)
     right_curvature = calculate_curvature(right_fit, y_eval, params)
 
+    offset = get_offset(out, left_points, right_points, params)
+
     out = print_curvature(out, left_curvature, right_curvature)
+    out = print_offset(out, offset)
 
     cv2.imshow('Sliding Lanes', out_img)
     cv2.imshow('Reverse Transform', out)
