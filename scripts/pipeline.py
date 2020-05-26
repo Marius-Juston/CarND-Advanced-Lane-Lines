@@ -103,8 +103,8 @@ def find_perspective_lines(image):
                          [width // 2 + x_top_width // 2, y_height],
                          [width // 2 + x_bottom_width // 2, height - ground_offset]], dtype=np.float32)
 
-    image = convert_to_image(np.dstack((image, image, image)))
-    output = cv2.polylines(np.copy(image), [vertices.astype(np.int32)], True, (0, 255, 255), 4)
+    output = cv2.polylines(convert_to_image(np.dstack((image, image, image))), [vertices.astype(np.int32)], True,
+                           (0, 255, 255), 4)
 
     dist = np.array([[width // 2 - x_bottom_width // 2, height],
                      [width // 2 - x_bottom_width // 2, 0],
@@ -113,7 +113,7 @@ def find_perspective_lines(image):
     output = cv2.polylines(output, [dist.astype(np.int32)], True, (255, 0, 255), 4)
 
     M = cv2.getPerspectiveTransform(vertices, dist)
-    perspective = cv2.warpPerspective(image, M, (width, height), flags=cv2.INTER_LINEAR)
+    perspective = cv2.warpPerspective(convert_to_image(image), M, (width, height), flags=cv2.INTER_LINEAR)
 
     cv2.imshow("Outlines", output)
     cv2.imshow("Perspective", perspective)
