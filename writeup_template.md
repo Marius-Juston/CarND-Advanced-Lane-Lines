@@ -188,4 +188,21 @@ Here's a [link to my video result][video1]
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+###### Issues
+
+Some issues that rose while working on the pipeline is that if there was too large of a curve then the sliding mean window:
+1. Started too off center thus causing the next window to be offset and miss some values
+2. If there was too large of a turn the margin would be able to catch all the data
+3. If there was a sharp turn and some erroneous lanes appeared then it was possible for the window to catch that fake lane a pursue that instead
+ 
+Another issue that I noticed was when there were sharp edges due to shadows the Sobel thresholder managed to identify it as an edge; however, this caused the sliding window to misinterpret it as a a lane
+
+Another issue was when the car was too off center then the it was possible that the the lane would not appear in the perspective
+
+###### Improvements
+
+In order to fix some of the issues I could fine tune even more and use even more thresholds such as other color thresholds. 
+
+For creating a better perspective warp I could try to find the vanishing point in order to find the horizon and be able to create a better figure that best represent the flat road.
+
+For the sliding mean I could make the find adaptive so it goes higher the window gets larger and wider due to the corrected warped perspective that increases the image that was before further away  
