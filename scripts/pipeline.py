@@ -90,7 +90,7 @@ def undistort(image, params):
     return cv2.undistort(image, mtx, dist, None, mtx)
 
 
-def find_perspective_lines(image):
+def find_perspective_lines(image, show_plots=False):
     height, width = image.shape
 
     ground_offset = 35
@@ -116,8 +116,9 @@ def find_perspective_lines(image):
     M_inv = cv2.getPerspectiveTransform(dist, vertices)
     perspective = cv2.warpPerspective(convert_to_image(image), M, (width, height), flags=cv2.INTER_LINEAR)
 
-    cv2.imshow("Outlines", output)
-    cv2.imshow("Perspective", perspective)
+    if show_plots:
+        cv2.imshow("Outlines", output)
+        cv2.imshow("Perspective", perspective)
 
     return perspective, M, M_inv
 
@@ -306,34 +307,35 @@ def get_offset(image, left_points, right_points, params):
     return offset
 
 
-def image_pipeline(image, params):
+def image_pipeline(image, params, show_plots=False):
     undistorted = undistort(image, params)
 
     gradients = gradient_threshold(undistorted, params)
     colors = color_threshold(undistorted, params)
 
-    cv2.imshow('undistorted', undistorted)
-    cv2.imshow('grads', convert_to_image(gradients))
-    cv2.imshow('colors', convert_to_image(colors))
-
     combined_threshold = np.logical_or(gradients, colors)
-    cv2.imshow("Combined", convert_to_image(combined_threshold))
 
-    perspective, M, M_inv = find_perspective_lines(combined_threshold)
+    perspective, M, M_inv = find_perspective_lines(combined_threshold, show_plots=show_plots)
     out_img, left_points, right_points, left_fit, right_fit = fit_polynomial(perspective)
 
-    out = draw_lines(image, left_points, right_points, M_inv)
-    cv2.imshow('Reverse Transform', out)
+    reverse_transform = draw_lines(image, left_points, right_points, M_inv)
 
     y_eval = np.max(left_points[:, 1])
     left_curvature = calculate_curvature(left_fit, y_eval, params)
     right_curvature = calculate_curvature(right_fit, y_eval, params)
 
-    offset = get_offset(out, left_points, right_points, params)
+    offset = get_offset(reverse_transform, left_points, right_points, params)
 
-    out = print_curvature(out, left_curvature, right_curvature)
-    out = print_offset(out, offset)
+    curvature_image = print_curvature(reverse_transform, left_curvature, right_curvature)
+    offset_image = print_offset(curvature_image, offset)
 
-    cv2.imshow('Sliding Lanes', out_img)
+    if show_plots:
+        cv2.imshow('undistorted', undistorted)
+        cv2.imshow('grads', convert_to_image(gradients))
+        cv2.imshow('colors', convert_to_image(colors))
+        cv2.imshow("Combined", convert_to_image(combined_threshold))
+        cv2.imshow('Reverse Transform', reverse_transform)
+        cv2.imshow('Sliding Lanes', out_img)
+        cv2.waitKey(500)
 
-    return out
+    return offset_image
