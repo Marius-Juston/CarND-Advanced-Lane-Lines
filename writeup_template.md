@@ -164,9 +164,15 @@ This is the output:
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+I implemented this step in lines 328 and 465 in the function `draw_lines` in `pipeline.py`. In order to implement this change instead of drawing the lines in the perspective changed image I decided to transform the polyfit line points instead into the orginal perspective. In order to implement this I had to reshape the points in the format (-1, 1, 2) in order for the algorithm to work.
 
-![alt text][image6]
+I then utilized OpenCV's `cv2.perspectiveTransform` and passed in the points as the initial parameters and the inverse matrix of the perspective transform matrix.
+
+I then drew the points unto the image and the created the fill polygon as an overlay.
+
+This is the result:
+
+![alt text][image12]
 
 ---
 
