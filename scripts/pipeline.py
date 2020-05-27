@@ -4,6 +4,7 @@ import pickle
 
 from scripts.color_thresholder import hsl_select
 from scripts.combined_gradient_filter import *
+from scripts.lane import Line
 
 
 def gradient_threshold(image, params):
@@ -149,7 +150,7 @@ def find_lane_pixels(binary_warped):
 
     # HYPERPARAMETERS
     # Choose the number of sliding windows
-    nwindows = 9
+    nwindows = 18
     # Set the width of the windows +/- margin
     margin = 100
     # Set minimum number of pixels found to recenter window
@@ -360,8 +361,19 @@ def video_pipeline(video_location, output_folder, params, show_plots=False):
     out = cv2.VideoWriter(f'{output_folder}/{file_name}', cv2.VideoWriter_fourcc(*'mp4v'), fps,
                           (frame_width, frame_height))
 
+    calibrate_camera(params)
+
+    left_lane = Line()
+    right_lane = Line()
+
     while cap.isOpened():
         ret, frame = cap.read()
+
+        undistorted = undistort(frame, params)
+        gradients = gradient_threshold(undistorted, params)
+        colors = color_threshold(undistorted, params)
+
+        combined_threshold = np.logical_or(gradients, colors)
 
         if ret:
             out.write(frame)
