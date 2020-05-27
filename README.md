@@ -12,6 +12,8 @@ All that said, please be concise!  We're not looking for you to write a book her
 
 You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
 
+This project's write up is located at [here](./writeup.md).
+
 The Project
 ---
 
