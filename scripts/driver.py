@@ -2,6 +2,7 @@ import os
 
 import cv2
 import numpy as np
+from moviepy.editor import VideoFileClip
 
 from scripts.pipeline import image_pipeline
 
@@ -14,6 +15,13 @@ def process_images(image_folder, output_folder):
         cv2.waitKey(500)
 
     cv2.destroyAllWindows()
+
+
+def process_video(video, output_folder, params):
+    clip1 = VideoFileClip(video)
+    white_clip = clip1.fl_image(
+        lambda image: cv2.cvtColor(image_pipeline(cv2.cvtColor(image, cv2.COLOR_RGB2BGR), params), cv2.COLOR_BGR2RGB))
+    white_clip.write_videofile(f'{output_folder}/1.mp4', audio=False)
 
 
 if __name__ == '__main__':
