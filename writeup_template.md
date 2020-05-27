@@ -31,6 +31,7 @@ The goals / steps of this project are the following:
 [image10]: ./report_images/Sliding%20Lanes.png "Finding Lanes through Sliding Means"
 [image11]: ./report_images/lane_histogram.png "Finding Lanes through Sliding Means"
 [image12]: ./report_images/Reverse%20Transform.png "Reverse Transform the Lane"
+[image13]: ./report_images/output.jpg "Final output"
 [video1]: ./output_videos/project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
