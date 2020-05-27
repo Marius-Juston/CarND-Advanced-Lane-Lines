@@ -20,6 +20,15 @@ def process_video(video, output_folder, params):
     video_pipeline(video, output_folder, params)
 
 
+# TODO  improve threshold
+# For shadow region
+# Try LAB or LUV color spaces. Some channels for these 2 usually provide a better detection for the shadowy/dark regions.
+# Try method called Contrast Limited Adaptive Histogram Equalization (or CLAHE for short):
+#
+# TODO improve sliding window
+# https://docs.opencv.org/master/d5/daf/tutorial_py_histogram_equalization.html
+# Try proximity search instead of full-blown sliding window search and sanity checks
+
 if __name__ == '__main__':
     params = {
         'k_size_x': 7,
