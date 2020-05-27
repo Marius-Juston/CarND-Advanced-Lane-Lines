@@ -428,6 +428,7 @@ def video_pipeline(video_location, output_folder, params, show_plots=False):
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     fps = int(round(cap.get(cv2.CAP_PROP_FPS), 0))
+    frames = int(round(cap.get(cv2.CAP_PROP_FRAME_COUNT), 0))
 
     out = cv2.VideoWriter(f'{output_folder}/{file_name}', cv2.VideoWriter_fourcc(*'mp4v'), fps,
                           (frame_width, frame_height))
@@ -437,7 +438,7 @@ def video_pipeline(video_location, output_folder, params, show_plots=False):
     left_lane = Line()
     right_lane = Line()
 
-    first = True
+    i = 1
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -449,8 +450,7 @@ def video_pipeline(video_location, output_folder, params, show_plots=False):
             combined_threshold = np.logical_or(gradients, colors)
             perspective, M, M_inv = find_perspective_lines(combined_threshold, params, show_plots=show_plots)
 
-            if first:
-                first = False
+            if i == 1:
                 out_img, left_points, right_points, left_fit, right_fit = fit_polynomial(perspective)
             else:
                 out_img, left_points, right_points, left_fit, right_fit = search_around_poly(perspective,
@@ -484,7 +484,9 @@ def video_pipeline(video_location, output_folder, params, show_plots=False):
                 cv2.imshow("Perspective", perspective)
                 cv2.waitKey(500)
 
+            print(i, frames, i / frames * 100)
             out.write(offset_image)
+            i += 1
         else:
             break
 
