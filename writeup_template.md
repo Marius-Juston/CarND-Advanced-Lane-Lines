@@ -29,7 +29,7 @@ The goals / steps of this project are the following:
 [image8]: ./report_images/Outline.png "The transform outline points"
 [image9]: ./report_images/Perspective.png "Perspective Transform"
 [image10]: ./report_images/Sliding%20Lanes.png "Finding Lanes through Sliding Means"
-[image11]: ./report_images/lane_histogram.png "Finding Lanes through Sliding Means"
+[image11]: ./report_images/lane_histogram.png "Histogram of pixel density"
 [image12]: ./report_images/Reverse%20Transform.png "Reverse Transform the Lane"
 [image13]: ./report_images/output.jpg "Final output"
 [video1]: ./output_videos/project_video.mp4 "Video"
@@ -137,6 +137,10 @@ Using the perspective transformed image through `find_perspective_lines` which r
 I then proceeded to use a moving average with a subdivision of 18 windows and I used a histogram to figure out where the peaks in the vertical sum of the images where so that I could know where to start the first windows. This function is called `fit_polynomial` and is implemented in lines 328 and 455 of `pipeline.py`.
 
 After finding each peak each window would increment by its' height and within the margin find the highest concentration of "on" values thus shifting the starting x for the next window.
+
+This is an example of a histogram, you can clearly see two peaks for the right and the left lane.
+
+![alt text][image11]
 
 The values that where within the margins of the window (its width) are considered part of the lane and are appended to a list of points. These points are then used to use a polynomial of order 2 fit using numpy's `np.polyfit`
 
