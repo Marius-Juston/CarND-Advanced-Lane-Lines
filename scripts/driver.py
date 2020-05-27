@@ -7,7 +7,7 @@ from moviepy.editor import VideoFileClip
 from scripts.pipeline import image_pipeline
 
 
-def process_images(image_folder, output_folder):
+def process_images(image_folder, output_folder, params):
     for file in os.listdir(image_folder):
         image = cv2.imread(f'{image_folder}/{file}')
         out = image_pipeline(image, params)
@@ -47,4 +47,4 @@ if __name__ == '__main__':
         'ym_per_pix': 30 / 720
     }
 
-    process_images('../test_images', '../output_images')
+    process_images('../test_images', '../output_images', params)
