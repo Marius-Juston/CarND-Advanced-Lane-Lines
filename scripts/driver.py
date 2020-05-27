@@ -2,9 +2,8 @@ import os
 
 import cv2
 import numpy as np
-from moviepy.editor import VideoFileClip
 
-from scripts.pipeline import image_pipeline
+from scripts.pipeline import image_pipeline, video_pipeline
 
 
 def process_images(image_folder, output_folder, params):
@@ -18,10 +17,7 @@ def process_images(image_folder, output_folder, params):
 
 
 def process_video(video, output_folder, params):
-    clip1 = VideoFileClip(video)
-    white_clip = clip1.fl_image(
-        lambda image: cv2.cvtColor(image_pipeline(cv2.cvtColor(image, cv2.COLOR_RGB2BGR), params), cv2.COLOR_BGR2RGB))
-    white_clip.write_videofile(f'{output_folder}/1.mp4', audio=False)
+    video_pipeline(video, output_folder, params)
 
 
 if __name__ == '__main__':
@@ -47,4 +43,5 @@ if __name__ == '__main__':
         'ym_per_pix': 30 / 720
     }
 
-    process_images('../test_images', '../output_images', params)
+    # process_images('../test_images', '../output_images', params)
+    process_video('../challenge_video.mp4', '../output_videos', params)

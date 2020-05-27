@@ -339,3 +339,26 @@ def image_pipeline(image, params, show_plots=False):
         cv2.waitKey(500)
 
     return offset_image
+
+
+def video_pipeline(video_location, output_folder, params, show_plots=False):
+    file_name = os.path.basename(video_location)
+
+    cap = cv2.VideoCapture(video_location)
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    fps = int(round(cap.get(cv2.CAP_PROP_FPS), 0))
+
+    out = cv2.VideoWriter(f'{output_folder}/{file_name}', cv2.VideoWriter_fourcc(*'mp4v'), fps,
+                          (frame_width, frame_height))
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+
+        if ret:
+            out.write(frame)
+        else:
+            break
+
+    cap.release()
+    out.release()
