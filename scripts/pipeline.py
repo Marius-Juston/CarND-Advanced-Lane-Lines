@@ -94,29 +94,22 @@ def undistort(image, params):
 def find_perspective_lines(image, params, show_plots=False):
     height, width = image.shape
 
+    ground_offset = 35
+    x_bottom_width = 835
+    x_top_width = 115
+    y_height = height * 5 / 8
+
+    vertices = np.array([[width // 2 - x_bottom_width // 2, height - ground_offset],
+                         [width // 2 - x_top_width // 2, y_height],
+                         [width // 2 + x_top_width // 2, y_height],
+                         [width // 2 + x_bottom_width // 2, height - ground_offset]], dtype=np.float32)
+
+    dist = np.array([[width // 2 - x_bottom_width // 2, height],
+                     [width // 2 - x_bottom_width // 2, 0],
+                     [width // 2 + x_bottom_width // 2, 0],
+                     [width // 2 + x_bottom_width // 2, height]], dtype=np.float32)
+
     if 'M' not in params or 'M_inv' not in params:
-        ground_offset = 35
-        x_bottom_width = 835
-        x_top_width = 115
-        y_height = height * 5 / 8
-
-        vertices = np.array([[width // 2 - x_bottom_width // 2, height - ground_offset],
-                             [width // 2 - x_top_width // 2, y_height],
-                             [width // 2 + x_top_width // 2, y_height],
-                             [width // 2 + x_bottom_width // 2, height - ground_offset]], dtype=np.float32)
-
-        output = cv2.polylines(convert_to_image(np.dstack((image, image, image))), [vertices.astype(np.int32)], True,
-                               (0, 255, 255), 4)
-
-        dist = np.array([[width // 2 - x_bottom_width // 2, height],
-                         [width // 2 - x_bottom_width // 2, 0],
-                         [width // 2 + x_bottom_width // 2, 0],
-                         [width // 2 + x_bottom_width // 2, height]], dtype=np.float32)
-        output = cv2.polylines(output, [dist.astype(np.int32)], True, (255, 0, 255), 4)
-
-        if show_plots:
-            cv2.imshow("Outline", output)
-
         M = cv2.getPerspectiveTransform(vertices, dist)
         M_inv = cv2.getPerspectiveTransform(dist, vertices)
 
@@ -127,6 +120,12 @@ def find_perspective_lines(image, params, show_plots=False):
         M_inv = params['M_inv']
 
     perspective = cv2.warpPerspective(convert_to_image(image), M, (width, height), flags=cv2.INTER_LINEAR)
+    if show_plots:
+        output = cv2.polylines(convert_to_image(np.dstack((image, image, image))), [vertices.astype(np.int32)], True,
+                               (0, 255, 255), 4)
+
+        output = cv2.polylines(output, [dist.astype(np.int32)], True, (255, 0, 255), 4)
+        cv2.imshow("Outline", output)
 
     return perspective, M, M_inv
 
