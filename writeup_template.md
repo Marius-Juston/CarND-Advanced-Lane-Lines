@@ -150,7 +150,17 @@ This is the result of the sliding mean and the poly fit line:
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+In order to calculate the radius of the curvature I used the the two lines of best fit calculated previously. I then used the formula for calculate the curvature of the lane. At the same time I scaled the curvature in order to reflect real world units, in this case meters.
+
+This process was done through the function `calculate_curvature` seen in `pipeline.py` and implemented in lines 331-332 and 468-489
+
+In order to calculate the offset from the center of the image I use the fitted lane lines and from that I got the lowest point possible and then I took the average x value of points. This average should represent the center of the lane. From that I proceeded tp substract that pixel value with half the width of the image in order to know the difference. From this difference I converted the value into real world values.
+
+This process was done through the function `get_offset` seen in `pipeline.py` and implemented in lines 334 and 471
+
+This is the output:
+
+![alt text][image13]
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
