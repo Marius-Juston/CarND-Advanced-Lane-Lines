@@ -90,35 +90,42 @@ def undistort(image, params):
     return cv2.undistort(image, mtx, dist, None, mtx)
 
 
-def find_perspective_lines(image, show_plots=False):
+def find_perspective_lines(image, params, show_plots=False):
     height, width = image.shape
 
-    ground_offset = 35
-    x_bottom_width = 835
-    x_top_width = 115
-    y_height = height * 5 / 8
+    if 'M' not in params or 'M_inv' not in params:
+        ground_offset = 35
+        x_bottom_width = 835
+        x_top_width = 115
+        y_height = height * 5 / 8
 
-    vertices = np.array([[width // 2 - x_bottom_width // 2, height - ground_offset],
-                         [width // 2 - x_top_width // 2, y_height],
-                         [width // 2 + x_top_width // 2, y_height],
-                         [width // 2 + x_bottom_width // 2, height - ground_offset]], dtype=np.float32)
+        vertices = np.array([[width // 2 - x_bottom_width // 2, height - ground_offset],
+                             [width // 2 - x_top_width // 2, y_height],
+                             [width // 2 + x_top_width // 2, y_height],
+                             [width // 2 + x_bottom_width // 2, height - ground_offset]], dtype=np.float32)
 
-    output = cv2.polylines(convert_to_image(np.dstack((image, image, image))), [vertices.astype(np.int32)], True,
-                           (0, 255, 255), 4)
+        output = cv2.polylines(convert_to_image(np.dstack((image, image, image))), [vertices.astype(np.int32)], True,
+                               (0, 255, 255), 4)
 
-    dist = np.array([[width // 2 - x_bottom_width // 2, height],
-                     [width // 2 - x_bottom_width // 2, 0],
-                     [width // 2 + x_bottom_width // 2, 0],
-                     [width // 2 + x_bottom_width // 2, height]], dtype=np.float32)
-    output = cv2.polylines(output, [dist.astype(np.int32)], True, (255, 0, 255), 4)
+        dist = np.array([[width // 2 - x_bottom_width // 2, height],
+                         [width // 2 - x_bottom_width // 2, 0],
+                         [width // 2 + x_bottom_width // 2, 0],
+                         [width // 2 + x_bottom_width // 2, height]], dtype=np.float32)
+        output = cv2.polylines(output, [dist.astype(np.int32)], True, (255, 0, 255), 4)
 
-    M = cv2.getPerspectiveTransform(vertices, dist)
-    M_inv = cv2.getPerspectiveTransform(dist, vertices)
+        if show_plots:
+            cv2.imshow("Outline", output)
+
+        M = cv2.getPerspectiveTransform(vertices, dist)
+        M_inv = cv2.getPerspectiveTransform(dist, vertices)
+
+        params['M'] = M
+        params['M_inv'] = M_inv
+    else:
+        M = params['M']
+        M_inv = params['M_inv']
+
     perspective = cv2.warpPerspective(convert_to_image(image), M, (width, height), flags=cv2.INTER_LINEAR)
-
-    if show_plots:
-        cv2.imshow("Outlines", output)
-        cv2.imshow("Perspective", perspective)
 
     return perspective, M, M_inv
 
@@ -315,7 +322,7 @@ def image_pipeline(image, params, show_plots=False):
 
     combined_threshold = np.logical_or(gradients, colors)
 
-    perspective, M, M_inv = find_perspective_lines(combined_threshold, show_plots=show_plots)
+    perspective, M, M_inv = find_perspective_lines(combined_threshold, params, show_plots=show_plots)
     out_img, left_points, right_points, left_fit, right_fit = fit_polynomial(perspective)
 
     reverse_transform = draw_lines(image, left_points, right_points, M_inv)
@@ -336,6 +343,7 @@ def image_pipeline(image, params, show_plots=False):
         cv2.imshow("Combined", convert_to_image(combined_threshold))
         cv2.imshow('Reverse Transform', reverse_transform)
         cv2.imshow('Sliding Lanes', out_img)
+        cv2.imshow("Perspective", perspective)
         cv2.waitKey(500)
 
     return offset_image
