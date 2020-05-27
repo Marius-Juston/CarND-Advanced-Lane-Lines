@@ -288,7 +288,7 @@ def print_curvature(image, left_curvature, right_curvature):
 
 
 def print_offset(image, offset):
-    text = f"The car is {abs(offset):.3f}m to the {'right' if offset >= 0 else 'left'}"
+    text = f"The car is {abs(offset):.3f}m to the {'right' if offset <= 0 else 'left'}"
     size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
 
     out = np.copy(image)
